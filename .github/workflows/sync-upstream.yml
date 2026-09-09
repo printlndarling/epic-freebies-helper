@@ -1,0 +1,30 @@
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # 每 6 小时
+  workflow_dispatch:       # 允许手动触发
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add upstream
+        run: |
+          git remote add upstream https://github.com/上游用户名/仓库名.git
+          git fetch upstream
+
+      - name: Sync main
+        run: |
+          git checkout main
+          git reset --hard upstream/main
+          git push origin main --force
